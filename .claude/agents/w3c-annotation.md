@@ -10,6 +10,7 @@ W3C Web Annotation Data Model expert. Use for annotation schema validation, sele
 - Annotation selectors and targeting
 - Media Fragments URI specification
 - Annotation collections and containers
+- Hypothesis.io's implementation of the W3C Web Annotation spec, especially their [open source library](https://github.com/hypothesis/client).
 
 ## W3C Annotation Core Concepts
 
