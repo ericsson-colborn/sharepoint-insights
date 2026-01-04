@@ -64,19 +64,25 @@ export default {
           to: { height: "0" },
         },
         "spin-slow": {
-          from: { transform: "rotate(0deg)" },
-          to: { transform: "rotate(360deg)" },
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
         },
         "flip-horizontal": {
           from: { transform: "rotateY(0deg)" },
           to: { transform: "rotateY(360deg)" },
         },
+        "wiggle": {
+          "0%, 100%": { transform: "rotate(0deg)" },
+          "25%": { transform: "rotate(-3deg)" },
+          "75%": { transform: "rotate(3deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "spin-slow": "spin-slow 8s linear infinite",
+        "spin-slow": "spin-slow 2s linear infinite",
         "flip-horizontal": "flip-horizontal 0.6s ease-in-out",
+        "wiggle": "wiggle 0.5s ease-in-out",
       },
     },
   },

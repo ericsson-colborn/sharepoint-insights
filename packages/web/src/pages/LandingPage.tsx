@@ -7,10 +7,15 @@ import { AppNavigation } from '../components/layout/AppNavigation';
 import { AppFooter } from '../components/layout/AppFooter';
 import { AnimatedLogo } from '../components/landing/AnimatedLogo';
 import { TypewriterCarousel } from '../components/landing/TypewriterCarousel';
+import { VideoBackground } from '../components/landing/VideoBackground';
+import { ComparisonCarousel } from '../components/landing/ComparisonCarousel';
 import wallpaper from '../../assets/wallpaper.png';
 import dovetailLogo from '../../assets/dovetail.webp';
 import marvinLogo from '../../assets/marvin.png';
 import condensLogo from '../../assets/condens.png';
+import hypothesisLogo from '../../assets/hypothesis.svg';
+import bkgMoveVideo from '../../assets/bkg_move.mp4';
+import collabLogo from '../../assets/logo.png';
 
 export function LandingPage() {
   const [displayedText, setDisplayedText] = useState('');
@@ -357,58 +362,73 @@ export function LandingPage() {
       </section>
 
       {/* Value Props Section */}
-      <section id="value-props-section" className="py-24 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-green-100/30 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-64 h-64 bg-blue-100/30 rounded-full blur-3xl" />
-        </div>
-
-        {/* Up Arrow at Top */}
-        <div className="absolute top-8 left-1/2 -translate-x-1/2">
-          <button
-            onClick={() => smoothScrollTo('#features-section')}
-            className="p-2 hover:opacity-70 transition-opacity"
-            aria-label="Scroll to previous section"
-          >
-            <ChevronUp className="h-5 w-5 text-gray-400" />
-          </button>
-        </div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <VideoBackground
+        videoSrc={bkgMoveVideo}
+        overlayOpacity={0.9}
+        enableParallax={true}
+      >
+        <section id="value-props-section" className="py-24 relative">
+          {/* Up Arrow at Top */}
+          <div className="absolute top-8 left-1/2 -translate-x-1/2">
+            <button
+              onClick={() => smoothScrollTo('#features-section')}
+              className="p-2 hover:opacity-70 transition-opacity"
+              aria-label="Scroll to previous section"
+            >
+              <ChevronUp className="h-5 w-5 text-white/70 hover:text-white" />
+            </button>
+          </div>
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-20">
-            <h2 className="text-5xl font-bold text-gray-900 mb-4">
-              Why teams choose <span className="font-medium border-b-4 border-primary pb-1">cluster</span>
+            <h2 className="text-5xl font-bold text-white mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3">
+              Why teams choose <span className="font-medium border-b-4 border-primary pb-1 inline-flex items-center gap-2 group cursor-default transition-all duration-300 hover:text-primary">
+                <span className="inline-block group-hover:animate-wiggle mt-1">cluster</span>
+                <img
+                  src={collabLogo}
+                  alt="Cluster"
+                  className="h-12 w-12 inline-block group-hover:animate-logo-spin"
+                />
+              </span>
+              <style>{`
+                @keyframes logo-spin {
+                  from { transform: rotateY(0deg); }
+                  to { transform: rotateY(360deg); }
+                }
+                .animate-logo-spin {
+                  animation: logo-spin 2.5s ease-in-out infinite;
+                }
+              `}</style>
             </h2>
             {/* <div className="w-24 h-1 bg-gradient-to-r from-primary to-blue-600 mx-auto mt-4 rounded-full" /> */}
           </div>
 
           <div className="grid md:grid-cols-3 gap-12">
-            <div className="group text-center p-8 rounded-2xl hover:bg-white hover:shadow-2xl hover:shadow-green-100/50 transition-all duration-300">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-50 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-flip-container">
-                <Shield className="h-10 w-10 text-green-600 icon-flip" />
+            <div className="group text-center p-8 rounded-2xl bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:shadow-2xl hover:shadow-green-500/20 transition-all duration-300 border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-flip-container shadow-lg shadow-green-500/50">
+                <Shield className="h-10 w-10 text-white icon-flip" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Your Data Stays Yours</h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
+              <h3 className="text-2xl font-bold text-white mb-3 drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]">Your Data Stays Yours</h3>
+              <p className="text-gray-300 leading-relaxed text-lg">
                 No data migration. No vendor lock-in. Your research files stay in SharePoint, under your control.
               </p>
             </div>
 
-            <div className="group text-center p-8 rounded-2xl hover:bg-white hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-300">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-flip-container">
-                <Zap className="h-10 w-10 text-blue-600 icon-flip" />
+            <div className="group text-center p-8 rounded-2xl bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-flip-container shadow-lg shadow-blue-500/50">
+                <Zap className="h-10 w-10 text-white icon-flip" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Lightweight & Fast</h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
+              <h3 className="text-2xl font-bold text-white mb-3 drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]">Lightweight & Fast</h3>
+              <p className="text-gray-300 leading-relaxed text-lg">
                 Add visual synthesis to your existing workflow. No heavy platform, no steep learning curve.
               </p>
             </div>
 
-            <div className="group text-center p-8 rounded-2xl hover:bg-white hover:shadow-2xl hover:shadow-purple-100/50 transition-all duration-300">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-flip-container">
-                <Users className="h-10 w-10 text-purple-600 icon-flip" />
+            <div className="group text-center p-8 rounded-2xl bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-flip-container shadow-lg shadow-purple-500/50">
+                <Users className="h-10 w-10 text-white icon-flip" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Built for Teams</h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
+              <h3 className="text-2xl font-bold text-white mb-3 drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]">Built for Teams</h3>
+              <p className="text-gray-300 leading-relaxed text-lg">
                 Share boards, collaborate on insights, and integrate with your enterprise tools seamlessly.
               </p>
             </div>
@@ -437,132 +457,89 @@ export function LandingPage() {
               }
             }
           `}</style>
-        </div>
-
-        {/* Down Arrow at Bottom */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-          <button
-            onClick={() => smoothScrollTo('#comparisons-section')}
-            className="p-2 hover:opacity-70 transition-opacity"
-            aria-label="Scroll to next section"
-          >
-            <ChevronDown className="h-5 w-5 text-gray-400" />
-          </button>
-        </div>
-      </section>
-
-      {/* Comparisons Section */}
-      <section id="comparisons-section" className="py-24 bg-white relative">
-        {/* Up Arrow at Top */}
-        <div className="absolute top-8 left-1/2 -translate-x-1/2">
-          <button
-            onClick={() => smoothScrollTo('#value-props-section')}
-            className="p-2 hover:opacity-70 transition-opacity"
-            aria-label="Scroll to previous section"
-          >
-            <ChevronUp className="h-5 w-5 text-gray-400" />
-          </button>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              How <span className="font-medium">cluster</span> compares
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              See how we stack up against other research tools
-            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Dovetail Comparison */}
-            <Card className="border-2 hover:border-primary hover:shadow-xl transition-all">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-2xl mb-2">
-                  <span>vs. Dovetail</span>
-                  <img src={dovetailLogo} alt="Dovetail" className="h-8 w-8 object-contain" />
-                </CardTitle>
-                <CardDescription className="text-base">
-                  <div className="space-y-2 text-left">
-                    <p className="font-semibold text-gray-900">What's similar:</p>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      <li>Visual synthesis & affinity mapping</li>
-                      <li>Highlight-based insights</li>
-                    </ul>
-                    <p className="font-semibold text-gray-900 mt-4">What's different:</p>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      <li>Files stay in your SharePoint</li>
-                      <li>W3C standard exports (no lock-in)</li>
-                      <li>Open source & self-hostable</li>
-                    </ul>
-                  </div>
-                </CardDescription>
-              </CardHeader>
-            </Card>
+          {/* Comparisons subsection */}
+          <div className="mt-24">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+                How <span className="font-medium text-primary">cluster</span> compares
+              </h2>
+              <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+                See how we stack up against other research tools
+              </p>
+            </div>
 
-            {/* Marvin Comparison */}
-            <Card className="border-2 hover:border-primary hover:shadow-xl transition-all">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-2xl mb-2">
-                  <span>vs. Marvin</span>
-                  <img src={marvinLogo} alt="Marvin" className="h-8 w-8 object-contain" />
-                </CardTitle>
-                <CardDescription className="text-base">
-                  <div className="space-y-2 text-left">
-                    <p className="font-semibold text-gray-900">What's similar:</p>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      <li>Interview transcripts & highlights</li>
-                      <li>Research repository</li>
-                    </ul>
-                    <p className="font-semibold text-gray-900 mt-4">What's different:</p>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      <li>No data migration required</li>
-                      <li>Enterprise-ready (M365 native)</li>
-                      <li>Infinite canvas for synthesis</li>
-                    </ul>
-                  </div>
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            {/* Condens Comparison */}
-            <Card className="border-2 hover:border-primary hover:shadow-xl transition-all">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-2xl mb-2">
-                  <span>vs. Condens</span>
-                  <img src={condensLogo} alt="Condens" className="h-8 w-8 object-contain" />
-                </CardTitle>
-                <CardDescription className="text-base">
-                  <div className="space-y-2 text-left">
-                    <p className="font-semibold text-gray-900">What's similar:</p>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      <li>Qualitative data analysis</li>
-                      <li>Tag-based organization</li>
-                    </ul>
-                    <p className="font-semibold text-gray-900 mt-4">What's different:</p>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      <li>Your data stays in your cloud</li>
-                      <li>Lightweight, not a heavy platform</li>
-                      <li>Focus on visual synthesis</li>
-                    </ul>
-                  </div>
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <ComparisonCarousel
+              comparisons={[
+                {
+                  name: 'Dovetail',
+                  logo: dovetailLogo,
+                  similar: [
+                    'Visual synthesis & affinity mapping',
+                    'Highlight-based insights',
+                  ],
+                  different: [
+                    'Files stay in your SharePoint',
+                    'W3C standard exports (no lock-in)',
+                    'Open source & self-hostable',
+                  ],
+                },
+                {
+                  name: 'Marvin',
+                  logo: marvinLogo,
+                  similar: [
+                    'Interview transcripts & highlights',
+                    'Research repository',
+                  ],
+                  different: [
+                    'No data migration required',
+                    'Enterprise-ready (M365 native)',
+                    'Infinite canvas for synthesis',
+                  ],
+                },
+                {
+                  name: 'Condens',
+                  logo: condensLogo,
+                  similar: [
+                    'Qualitative data analysis',
+                    'Tag-based organization',
+                  ],
+                  different: [
+                    'Your data stays in your cloud',
+                    'Lightweight, not a heavy platform',
+                    'Focus on visual synthesis',
+                  ],
+                },
+                {
+                  name: 'Hypothesis',
+                  logo: hypothesisLogo,
+                  similar: [
+                    'W3C Web Annotation standard',
+                    'Collaborative annotation',
+                  ],
+                  different: [
+                    'Built for UX research workflows',
+                    'Visual synthesis & clustering',
+                    'Enterprise SharePoint integration',
+                  ],
+                },
+              ]}
+            />
           </div>
-        </div>
 
-        {/* Down Arrow at Bottom */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-          <button
-            onClick={() => smoothScrollTo('#pricing')}
-            className="p-2 hover:opacity-70 transition-opacity"
-            aria-label="Scroll to next section"
-          >
-            <ChevronDown className="h-5 w-5 text-gray-400" />
-          </button>
-        </div>
-      </section>
+          {/* Down Arrow at Bottom */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+            <button
+              onClick={() => smoothScrollTo('#pricing')}
+              className="p-2 hover:opacity-70 transition-opacity"
+              aria-label="Scroll to next section"
+            >
+              <ChevronDown className="h-5 w-5 text-white/70 hover:text-white" />
+            </button>
+          </div>
+        </section>
+      </VideoBackground>
 
       {/* Pricing Section */}
       <section id="pricing" className="py-24 bg-gray-50 relative">
@@ -760,109 +737,6 @@ export function LandingPage() {
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
           <button
             onClick={() => smoothScrollTo('#support-section')}
-            className="p-2 hover:opacity-70 transition-opacity"
-            aria-label="Scroll to next section"
-          >
-            <ChevronDown className="h-5 w-5 text-gray-400" />
-          </button>
-        </div>
-      </section>
-
-      {/* Support Section */}
-      <section id="support-section" className="py-24 bg-white relative">
-        {/* Up Arrow at Top */}
-        <div className="absolute top-8 left-1/2 -translate-x-1/2">
-          <button
-            onClick={() => smoothScrollTo('#pricing')}
-            className="p-2 hover:opacity-70 transition-opacity"
-            aria-label="Scroll to previous section"
-          >
-            <ChevronUp className="h-5 w-5 text-gray-400" />
-          </button>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Need help?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We're here to support you every step of the way
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                window.open('https://github.com/ericsson-colborn/sharepoint-insights#readme', '_blank');
-              }}
-              className="group"
-            >
-              <Card className="h-full border-2 hover:border-primary hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-                <CardHeader>
-                  <CardTitle className="text-2xl mb-2 flex items-center gap-2">
-                    Documentation
-                    <svg className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </CardTitle>
-                  <CardDescription className="text-base">
-                    Comprehensive guides and tutorials to get you started
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </a>
-
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                window.open('https://github.com/ericsson-colborn/sharepoint-insights/discussions', '_blank');
-              }}
-              className="group"
-            >
-              <Card className="h-full border-2 hover:border-primary hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-                <CardHeader>
-                  <CardTitle className="text-2xl mb-2 flex items-center gap-2">
-                    Community
-                    <svg className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </CardTitle>
-                  <CardDescription className="text-base">
-                    Join our community forum to connect with other users
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </a>
-
-            <a
-              href="mailto:support@cluster.app"
-              className="group"
-            >
-              <Card className="h-full border-2 hover:border-primary hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-                <CardHeader>
-                  <CardTitle className="text-2xl mb-2 flex items-center gap-2">
-                    Email Support
-                    <svg className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </CardTitle>
-                  <CardDescription className="text-base">
-                    Get help from our team at support@cluster.app
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </a>
-          </div>
-        </div>
-
-        {/* Down Arrow at Bottom */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-          <button
-            onClick={() => smoothScrollTo('#cta-section')}
             className="p-2 hover:opacity-70 transition-opacity"
             aria-label="Scroll to next section"
           >

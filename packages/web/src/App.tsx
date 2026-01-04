@@ -90,7 +90,6 @@ function Workspace() {
           <Route path="/browse/*" element={<FilesPage />} />
           <Route path="/clusters/:clusterId/play" element={<ClusterPlaybackPage />} />
           <Route path="/clusters" element={<OrganizePageCanvas />} />
-          <Route path="/studies" element={<StudiesPlaceholder />} />
           <Route path="/insights" element={<InsightsPlaceholder />} />
           <Route path="/" element={<HomePage sites={sites} sitesLoading={sitesLoading} currentUser={currentUser} authStatus={authStatus} />} />
         </Routes>
@@ -176,7 +175,7 @@ function HomePage({ sites, sitesLoading, currentUser, authStatus }: any) {
   const hasRecentActivity = recentActivity && recentActivity.length > 0;
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 via-white to-primary/10 flex items-center">
+    <main className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 via-white to-primary/30 flex items-center">
       <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
         {/* Welcome Header */}
         <div className="mb-20">
