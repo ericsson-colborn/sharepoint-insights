@@ -367,19 +367,19 @@ export function LandingPage() {
         overlayOpacity={0.9}
         enableParallax={true}
       >
-        <section id="value-props-section" className="py-24 relative">
+        <section id="value-props-section" className="py-16 relative">
           {/* Up Arrow at Top */}
           <div className="absolute top-8 left-1/2 -translate-x-1/2">
             <button
               onClick={() => smoothScrollTo('#features-section')}
-              className="p-2 hover:opacity-70 transition-opacity"
+              className="hover:opacity-70 transition-opacity"
               aria-label="Scroll to previous section"
             >
               <ChevronUp className="h-5 w-5 text-white/70 hover:text-white" />
             </button>
           </div>
           <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-20">
+          <div className="text-center mb-10 mt-4">
             <h2 className="text-5xl font-bold text-white mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3">
               Why teams choose <span className="font-medium border-b-4 border-primary pb-1 inline-flex items-center gap-2 group cursor-default transition-all duration-300 hover:text-primary">
                 <span className="inline-block group-hover:animate-wiggle mt-1">cluster</span>
@@ -402,7 +402,7 @@ export function LandingPage() {
             {/* <div className="w-24 h-1 bg-gradient-to-r from-primary to-blue-600 mx-auto mt-4 rounded-full" /> */}
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12">
+          <div className="grid md:grid-cols-3 gap-12 mb-16">
             <div className="group text-center p-8 rounded-2xl bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:shadow-2xl hover:shadow-green-500/20 transition-all duration-300 border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
               <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-flip-container shadow-lg shadow-green-500/50">
                 <Shield className="h-10 w-10 text-white icon-flip" />
@@ -460,8 +460,8 @@ export function LandingPage() {
           </div>
 
           {/* Comparisons subsection */}
-          <div className="mt-24">
-            <div className="text-center mb-16">
+          <div className="mt-18 mb-10">
+            <div className="text-center mb-8">
               <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
                 How <span className="font-medium text-primary">cluster</span> compares
               </h2>
@@ -529,7 +529,7 @@ export function LandingPage() {
           </div>
 
           {/* Down Arrow at Bottom */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
             <button
               onClick={() => smoothScrollTo('#pricing')}
               className="p-2 hover:opacity-70 transition-opacity"
@@ -542,11 +542,11 @@ export function LandingPage() {
       </VideoBackground>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-gray-50 relative">
+      <section id="pricing" className="py-20 bg-gray-50 relative">
         {/* Up Arrow at Top */}
-        <div className="absolute top-8 left-1/2 -translate-x-1/2">
+        <div className="absolute top-6 left-1/2 -translate-x-1/2">
           <button
-            onClick={() => smoothScrollTo('#comparisons-section')}
+            onClick={() => smoothScrollTo('#value-props-section')}
             className="p-2 hover:opacity-70 transition-opacity"
             aria-label="Scroll to previous section"
           >
@@ -731,17 +731,6 @@ export function LandingPage() {
               </div>
             </Card>
           </div>
-        </div>
-
-        {/* Down Arrow at Bottom */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-          <button
-            onClick={() => smoothScrollTo('#support-section')}
-            className="p-2 hover:opacity-70 transition-opacity"
-            aria-label="Scroll to next section"
-          >
-            <ChevronDown className="h-5 w-5 text-gray-400" />
-          </button>
         </div>
       </section>
 
