@@ -302,8 +302,34 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Research synthesis, reimagined
+              Research synthesis, <span className="shimmer-text">reimagined</span>
             </h2>
+            <style>{`
+              .shimmer-text {
+                background: linear-gradient(
+                  90deg,
+                  #1e293b 0%,
+                  #1e293b 40%,
+                  #f59e0b 50%,
+                  #1e293b 60%,
+                  #1e293b 100%
+                );
+                background-size: 200% 100%;
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: shimmer 6s linear infinite;
+              }
+
+              @keyframes shimmer {
+                0% {
+                  background-position: 200% 0;
+                }
+                100% {
+                  background-position: -200% 0;
+                }
+              }
+            `}</style>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Everything you need to turn scattered highlights into compelling insights, without the overhead
             </p>
@@ -460,7 +486,7 @@ export function LandingPage() {
           </div>
 
           {/* Comparisons subsection */}
-          <div className="mt-18 mb-10">
+          <div className="mt-18 mb-8">
             <div className="text-center mb-8">
               <h2 className="text-4xl font-bold text-white mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
                 How <span className="font-medium text-primary">cluster</span> compares
