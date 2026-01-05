@@ -1,17 +1,43 @@
 /**
- * Shared animation styles and constants for landing page components
+ * Shared animation styles and constants for landing page components.
+ * Centralizes all animation timing values for consistency across the landing page.
+ *
+ * @example
+ * ```tsx
+ * import { ANIMATION_DURATIONS, cursorBlinkKeyframes } from './animations';
+ *
+ * // Use in inline styles
+ * <style>{`
+ *   .cursor {
+ *     animation: cursorBlink ${ANIMATION_DURATIONS.cursorBlink}ms step-end infinite;
+ *   }
+ *   ${cursorBlinkKeyframes}
+ * `}</style>
+ * ```
  */
 
+/**
+ * Animation duration constants in milliseconds.
+ * All timing values are centralized here for easy adjustment.
+ */
 export const ANIMATION_DURATIONS = {
-  typewriter: 50, // ms per character
-  typewriterPause: 3000, // ms between phrases
-  shimmer: 6000, // ms for shimmer effect
-  logoPulse: 3000, // ms for logo pulse
-  logoSpin: 2500, // ms for logo spin
-  iconFlip: 600, // ms for icon flip
-  cursorBlink: 1060, // ms for cursor blink
+  /** Duration per character for typewriter effect */
+  typewriter: 50,
+  /** Pause duration between typewriter phrases */
+  typewriterPause: 3000,
+  /** Duration for shimmer text effect */
+  shimmer: 6000,
+  /** Duration for logo pulse animation */
+  logoPulse: 3000,
+  /** Duration for logo spin animation */
+  logoSpin: 2500,
+  /** Duration for icon flip on hover */
+  iconFlip: 600,
+  /** Duration for cursor blink cycle */
+  cursorBlink: 1060,
 } as const;
 
+/** CSS keyframes for cursor blink animation */
 export const cursorBlinkKeyframes = `
   @keyframes cursorBlink {
     0%, 49% {
@@ -23,6 +49,7 @@ export const cursorBlinkKeyframes = `
   }
 `;
 
+/** CSS keyframes for text shimmer effect */
 export const shimmerKeyframes = `
   @keyframes shimmer {
     0% {
@@ -34,6 +61,7 @@ export const shimmerKeyframes = `
   }
 `;
 
+/** CSS keyframes for logo 3D spin animation */
 export const logoSpinKeyframes = `
   @keyframes logo-spin {
     from { transform: rotateY(0deg); }
@@ -41,6 +69,7 @@ export const logoSpinKeyframes = `
   }
 `;
 
+/** CSS keyframes for logo pulse (scale) animation */
 export const logoPulseKeyframes = `
   @keyframes logoPulse {
     0%, 100% {
@@ -52,6 +81,7 @@ export const logoPulseKeyframes = `
   }
 `;
 
+/** CSS keyframes for icon horizontal flip animation */
 export const iconFlipKeyframes = `
   @keyframes flipHorizontal {
     from {
@@ -63,6 +93,7 @@ export const iconFlipKeyframes = `
   }
 `;
 
+/** CSS keyframes for wiggle rotation animation */
 export const wiggleKeyframes = `
   @keyframes wiggle {
     0%, 100% { transform: rotate(0deg); }
@@ -72,7 +103,8 @@ export const wiggleKeyframes = `
 `;
 
 /**
- * CSS class for cursor blink animation
+ * Pre-configured cursor blink animation class.
+ * Can be used directly in style objects.
  */
 export const cursorBlinkClass = {
   animation: `cursorBlink ${ANIMATION_DURATIONS.cursorBlink}ms step-end infinite`,

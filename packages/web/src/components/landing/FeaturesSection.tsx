@@ -1,10 +1,21 @@
+import { memo } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { FolderOpen, Tag, Lightbulb } from 'lucide-react';
 import { smoothScrollTo } from '../../lib/animations';
 import { ScrollButton } from './ScrollButton';
 import { shimmerKeyframes, ANIMATION_DURATIONS } from './animations';
 
-export function FeaturesSection() {
+/**
+ * Features section showcasing the three core capabilities of the platform.
+ * Displays feature cards with icons for Browse, Organize, and Generate Insights,
+ * along with shimmer text animation effect on the heading.
+ *
+ * @example
+ * ```tsx
+ * <FeaturesSection />
+ * ```
+ */
+export const FeaturesSection = memo(function FeaturesSection() {
   return (
     <section id="features-section" className="py-24 bg-white relative">
       {/* Up Arrow at Top */}
@@ -47,6 +58,7 @@ export function FeaturesSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
+          {/* Left card */}
           <Card className="group border-2 hover:border-primary hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-gradient-to-br from-white to-gray-50/50">
             <CardHeader className="text-center">
               <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-102 transition-transform duration-300">
@@ -58,7 +70,7 @@ export function FeaturesSection() {
               </CardDescription>
             </CardHeader>
           </Card>
-
+          {/* Middle card */}
           <Card className="group border-2 border-primary/50 hover:border-primary hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-gradient-to-br from-primary/5 to-white relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
             <CardHeader className="text-center relative">
@@ -71,7 +83,7 @@ export function FeaturesSection() {
               </CardDescription>
             </CardHeader>
           </Card>
-
+          {/* Right card */}
           <Card className="group border-2 hover:border-primary hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1 transition-all duration-300 bg-gradient-to-br from-white to-gray-50/50">
             <CardHeader className="text-center">
               <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-102 transition-transform duration-300">
@@ -86,7 +98,6 @@ export function FeaturesSection() {
         </div>
       </div>
 
-      {/* Down Arrow at Bottom */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
         <ScrollButton
           direction="down"
@@ -97,4 +108,4 @@ export function FeaturesSection() {
       </div>
     </section>
   );
-}
+});

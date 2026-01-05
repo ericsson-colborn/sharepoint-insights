@@ -14,6 +14,22 @@ export function formatTime(seconds: string | number | null | undefined): string 
 }
 
 /**
+ * Formats a time value in seconds, including hours if >= 1 hour.
+ * @param seconds - Time in seconds
+ * @returns Formatted time string (e.g., "3:45" or "1:03:45")
+ */
+export function formatTimestamp(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+  return `${minutes}:${secs.toString().padStart(2, '0')}`;
+}
+
+/**
  * Formats a time range from start to end time.
  * @param startTime - Start time in seconds
  * @param endTime - End time in seconds (optional)

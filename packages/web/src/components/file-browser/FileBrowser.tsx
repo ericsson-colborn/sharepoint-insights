@@ -1,24 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
+import { Folder } from 'lucide-react';
 import { useSharePointSites } from '../../api/hooks/useSharePointSites';
 import { useDrives } from '../../api/hooks/useDrives';
 import { useDriveItems } from '../../api/hooks/useDriveItems';
 import { useAccessToken } from '../../hooks/useAccessToken';
+import { LoadingSpinner } from '../ui/LoadingSpinner';
+import { EmptyState } from '../ui/EmptyState';
 import sharepointLogo from '../../../assets/sharepoint_logo.svg';
+import type { SharePointDriveItem, FileBrowserState, BreadcrumbItem } from '../../types/sharepoint';
 
 interface FileBrowserProps {
-  onFileSelect?: (file: any) => void;
-  initialState?: {
-    selectedSiteId: string | null;
-    selectedDriveId: string | null;
-    currentFolderId: string;
-    breadcrumbs: Array<{ id: string; name: string }>;
-  };
-  onStateChange?: (state: {
-    selectedSiteId: string | null;
-    selectedDriveId: string | null;
-    currentFolderId: string;
-    breadcrumbs: Array<{ id: string; name: string }>;
-  }) => void;
+  onFileSelect?: (file: SharePointDriveItem) => void;
+  initialState?: FileBrowserState;
+  onStateChange?: (state: FileBrowserState) => void;
 }
 
 export function FileBrowser({ onFileSelect, initialState, onStateChange }: FileBrowserProps) {
@@ -35,7 +29,7 @@ export function FileBrowser({ onFileSelect, initialState, onStateChange }: FileB
   const [currentFolderId, setCurrentFolderId] = useState<string>(
     initialState?.currentFolderId ?? 'root'
   );
-  const [breadcrumbs, setBreadcrumbs] = useState<Array<{ id: string; name: string }>>(
+  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>(
     initialState?.breadcrumbs ?? [{ id: 'root', name: 'Root' }]
   );
 
@@ -114,9 +108,7 @@ export function FileBrowser({ onFileSelect, initialState, onStateChange }: FileB
               SharePoint Sites
             </h3>
             {sitesLoading ? (
-              <div className="text-center py-8">
-                <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-blue-400 border-r-transparent"></div>
-              </div>
+              <LoadingSpinner centered color="muted" label="Loading sites" />
             ) : (
               <div className="space-y-1">
                 {sites?.map((site) => (
@@ -156,9 +148,7 @@ export function FileBrowser({ onFileSelect, initialState, onStateChange }: FileB
               </button>
             </div>
             {drivesLoading ? (
-              <div className="text-center py-8">
-                <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-blue-400 border-r-transparent"></div>
-              </div>
+              <LoadingSpinner centered color="muted" label="Loading document libraries" />
             ) : (
               <div className="space-y-1">
                 {drives?.map((drive) => (
@@ -219,9 +209,7 @@ export function FileBrowser({ onFileSelect, initialState, onStateChange }: FileB
 
             {/* Items List */}
             {itemsLoading ? (
-              <div className="text-center py-8">
-                <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-blue-400 border-r-transparent"></div>
-              </div>
+              <LoadingSpinner centered color="muted" label="Loading files" />
             ) : items && items.length > 0 ? (
               <div className="space-y-1">
                 {items.map((item) => (
@@ -263,12 +251,11 @@ export function FileBrowser({ onFileSelect, initialState, onStateChange }: FileB
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 text-gray-500">
-                <svg className="mx-auto h-10 w-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                </svg>
-                <p className="mt-2 text-xs">This folder is empty</p>
-              </div>
+              <EmptyState
+                icon={Folder}
+                title="This folder is empty"
+                size="md"
+              />
             )}
           </div>
         )}

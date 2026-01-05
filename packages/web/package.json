@@ -1,5 +1,5 @@
 {
-  "name": "@research-annotations/web",
+  "name": "@cluster/web",
   "version": "0.1.0",
   "type": "module",
   "scripts": {
@@ -20,10 +20,13 @@
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@research-annotations/shared": "workspace:*",
+    "@cluster/core": "workspace:*",
+    "@cluster/w3c": "workspace:*",
     "@tanstack/react-query": "^5.17.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "dom-anchor-text-position": "^5.0.0",
+    "dom-anchor-text-quote": "^4.0.2",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.309.0",
     "react": "^18.2.0",

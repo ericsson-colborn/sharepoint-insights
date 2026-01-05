@@ -1,20 +1,44 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+/**
+ * Comparison data for a single competitor.
+ */
 interface Comparison {
+  /** Name of the competing product */
   name: string;
+  /** Logo image URL */
   logo: string;
+  /** Features that are similar to our product */
   similar: string[];
+  /** Features that differentiate our product */
   different: string[];
 }
 
+/**
+ * Carousel component for displaying competitor comparisons.
+ * Shows multiple comparison cards at once with navigation controls and
+ * dot indicators. Cards display similarities and differences for each competitor.
+ *
+ * @example
+ * ```tsx
+ * <ComparisonCarousel
+ *   comparisons={[
+ *     { name: 'Dovetail', logo: dovetailLogo, similar: [...], different: [...] }
+ *   ]}
+ *   cardsPerPage={3}
+ * />
+ * ```
+ */
 interface ComparisonCarouselProps {
+  /** Array of competitor comparison data */
   comparisons: Comparison[];
+  /** Number of cards to display at once (default: 3) */
   cardsPerPage?: number;
 }
 
-export function ComparisonCarousel({ comparisons, cardsPerPage = 3 }: ComparisonCarouselProps) {
+export const ComparisonCarousel = memo(function ComparisonCarousel({ comparisons, cardsPerPage = 3 }: ComparisonCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlePrev = () => {
@@ -111,4 +135,4 @@ export function ComparisonCarousel({ comparisons, cardsPerPage = 3 }: Comparison
       </div>
     </div>
   );
-}
+});

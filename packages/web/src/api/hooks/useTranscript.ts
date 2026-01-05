@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import type { SharePointDriveItem } from '../../types/sharepoint';
 
 export interface TranscriptCue {
   id?: string;
@@ -18,8 +19,8 @@ export interface ParsedTranscript {
  * Hook to fetch and parse a transcript file
  */
 export function useTranscript(
-  driveId: string | null,
-  itemId: string | null,
+  driveId: string | null | undefined,
+  itemId: string | null | undefined,
   accessToken: string | null
 ) {
   return useQuery({
@@ -39,7 +40,10 @@ export function useTranscript(
  * Detect if a transcript file exists for a video file
  * Looks for .vtt files with similar names in the same folder
  */
-export function findTranscriptFile(videoFile: any, allFiles: any[]): any | null {
+export function findTranscriptFile(
+  videoFile: SharePointDriveItem | null | undefined,
+  allFiles: SharePointDriveItem[]
+): SharePointDriveItem | null {
   if (!videoFile || !allFiles) return null;
 
   const videoName = videoFile.name.replace(/\.[^/.]+$/, ''); // Remove extension

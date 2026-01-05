@@ -1,10 +1,22 @@
+import { memo } from 'react';
 import { Shield, Zap, Users } from 'lucide-react';
 import { smoothScrollTo } from '../../lib/animations';
 import collabLogo from '../../../assets/logo.png';
 import { ScrollButton } from './ScrollButton';
 import { iconFlipKeyframes } from './animations';
 
-export function ValuePropsSection() {
+/**
+ * Value propositions section highlighting key differentiators.
+ * Showcases three core benefits with animated icon cards: data sovereignty,
+ * lightweight performance, and team collaboration. Features 3D flip animations
+ * on hover and logo spin effect.
+ *
+ * @example
+ * ```tsx
+ * <ValuePropsSection />
+ * ```
+ */
+export const ValuePropsSection = memo(function ValuePropsSection() {
   return (
     <section id="value-props-section" className="py-16 relative">
       {/* Up Arrow at Top */}
@@ -90,4 +102,4 @@ export function ValuePropsSection() {
       </div>
     </section>
   );
-}
+});

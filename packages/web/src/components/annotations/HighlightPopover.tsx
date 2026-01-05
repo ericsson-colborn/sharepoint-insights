@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import type { SelectionInfo } from '../../hooks/useTextSelection';
 import type { MediaSelectionInfo } from '../../hooks/useMediaSelection';
 import type { Annotation } from '../../api/hooks/useAnnotations';
+import type { SelectorType, Selector, CombinedTextSelector } from '@cluster/core';
+import { formatTimestamp } from '../../lib/formatting';
 import {
   Sheet,
   SheetContent,
@@ -20,8 +22,8 @@ interface HighlightPopoverProps {
   onCreateHighlight: (data: {
     bodyText?: string;
     tagIds?: string[];
-    selectorType: string;
-    selectorValue: any;
+    selectorType: SelectorType;
+    selectorValue: Selector | CombinedTextSelector;
     exactText?: string;
     startTime?: number;
     endTime?: number;
@@ -100,8 +102,8 @@ export function HighlightPopover({
 
   const previewTime = mode === 'edit' && editingAnnotation
     ? {
-        startTime: editingAnnotation.targets[0]?.startTime ? parseFloat(editingAnnotation.targets[0].startTime) : null,
-        endTime: editingAnnotation.targets[0]?.endTime ? parseFloat(editingAnnotation.targets[0].endTime) : null,
+        startTime: editingAnnotation.targets[0]?.startTime ?? null,
+        endTime: editingAnnotation.targets[0]?.endTime ?? null,
       }
     : isMediaSelection && selection
     ? { startTime: selection.startTime, endTime: selection.endTime }
@@ -129,7 +131,7 @@ export function HighlightPopover({
               <div className="text-sm">
                 <div className="font-medium mb-1">Video Clip</div>
                 <div className="text-muted-foreground">
-                  {formatTime(previewTime.startTime)} → {formatTime(previewTime.endTime)}
+                  {formatTimestamp(previewTime.startTime)} → {formatTimestamp(previewTime.endTime)}
                   <span className="ml-2 text-xs">
                     ({(previewTime.endTime - previewTime.startTime).toFixed(1)}s)
                   </span>
@@ -181,10 +183,4 @@ export function HighlightPopover({
       </SheetContent>
     </Sheet>
   );
-}
-
-function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
 }

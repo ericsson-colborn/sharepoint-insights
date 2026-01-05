@@ -1,6 +1,7 @@
 {
-  "name": "@cluster/core",
+  "name": "@cluster/w3c",
   "version": "0.1.0",
+  "description": "Pure W3C Web Annotation Data Model types",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -16,11 +17,8 @@
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@cluster/w3c": "workspace:*",
-    "zod": "^3.22.4"
-  },
   "devDependencies": {
     "typescript": "^5.3.3"
-  }
+  },
+  "license": "AGPL-3.0"
 }

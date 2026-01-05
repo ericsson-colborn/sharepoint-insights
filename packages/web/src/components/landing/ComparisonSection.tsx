@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ComparisonCarousel } from './ComparisonCarousel';
 import { smoothScrollTo } from '../../lib/animations';
 import { ScrollButton } from './ScrollButton';
@@ -6,7 +7,17 @@ import marvinLogo from '../../../assets/marvin.png';
 import condensLogo from '../../../assets/condens.png';
 import hypothesisLogo from '../../../assets/hypothesis.svg';
 
-export function ComparisonSection() {
+/**
+ * Comparison section showcasing how the platform compares to competitors.
+ * Displays a carousel of comparison cards highlighting similarities and
+ * differentiators against tools like Dovetail, Marvin, Condens, and Hypothesis.
+ *
+ * @example
+ * ```tsx
+ * <ComparisonSection />
+ * ```
+ */
+export const ComparisonSection = memo(function ComparisonSection() {
   const comparisons = [
     {
       name: 'Dovetail',
@@ -86,4 +97,4 @@ export function ComparisonSection() {
       </div>
     </div>
   );
-}
+});

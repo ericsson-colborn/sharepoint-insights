@@ -1,7 +1,17 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import collabLogo from '../../../assets/logo.png';
 
-export function AnimatedLogo() {
+/**
+ * Animated logo component with bouncing effect and emanating rays.
+ * Features a synchronized bounce animation with shadow pulse and radiating
+ * rays that pulse outward from the logo center. Fades in on mount.
+ *
+ * @example
+ * ```tsx
+ * <AnimatedLogo />
+ * ```
+ */
+export const AnimatedLogo = memo(function AnimatedLogo() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -91,4 +101,4 @@ export function AnimatedLogo() {
       `}</style>
     </div>
   );
-}
+});

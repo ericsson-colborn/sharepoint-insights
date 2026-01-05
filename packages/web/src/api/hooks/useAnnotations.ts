@@ -1,92 +1,30 @@
+/**
+ * Annotation API Hooks
+ *
+ * React Query hooks for annotation CRUD operations with optimistic updates.
+ */
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import type {
+  StoredAnnotation,
+  StoredAnnotationTarget,
+  CreateAnnotationInput,
+  UpdateAnnotationInput,
+  AnnotationFilters,
+} from '@cluster/core';
 
-export interface Annotation {
-  id: string;
-  orgId: string;
-  studyId: string | null;
-  motivation: string[];
-  creatorId: string;
-  createdAt: string;
-  modifiedAt: string;
-  participantId: string | null;
-  sessionId: string | null;
-  jsonld: any;
-  bodyText: string | null;
-  deletedAt: string | null;
-  targets: AnnotationTarget[];
-  tagIds: string[];
-}
-
-export interface AnnotationTarget {
-  id: string;
-  annotationId: string;
-  fileRefId: string;
-  sharepointItemId?: string; // SharePoint item ID for matching with files
-  selectorType: string;
-  selectorValue: any;
-  exactText: string | null;
-  startTime: string | null;
-  endTime: string | null;
-  createdAt: string;
-  fileRef?: {
-    id: string;
-    name: string;
-    mimeType: string | null;
-    webUrl: string | null;
-    sharepointDriveId?: string;
-    sharepointItemId?: string;
-  };
-}
-
-export interface CreateAnnotationInput {
-  motivation: string[];
-  bodyText?: string;
-  targets: {
-    driveId: string;
-    itemId: string;
-    provider?: 'sharepoint' | 'googledrive';
-    selectorType: string;
-    selectorValue: any;
-    exactText?: string;
-    startTime?: number;
-    endTime?: number;
-    fileMetadata?: {
-      name: string;
-      mimeType?: string;
-      size?: number;
-      webUrl?: string;
-      siteId?: string;
-    };
-  }[];
-  tagIds?: string[];
-  studyId?: string;
-  participantId?: string;
-  sessionId?: string;
-}
-
-export interface UpdateAnnotationInput {
-  motivation?: string[];
-  bodyText?: string;
-  tagIds?: string[];
-  studyId?: string;
-  participantId?: string;
-  sessionId?: string;
-}
-
-export interface AnnotationsListFilters {
-  studyId?: string;
-  fileRefId?: string;
-  tagIds?: string[];
-  limit?: number;
-  offset?: number;
-}
+// Re-export types for consumers (maintaining backward compatibility)
+export type { StoredAnnotation as Annotation } from '@cluster/core';
+export type { StoredAnnotationTarget as AnnotationTarget } from '@cluster/core';
+export type { CreateAnnotationInput, UpdateAnnotationInput } from '@cluster/core';
+export type { AnnotationFilters as AnnotationsListFilters } from '@cluster/core';
 
 /**
  * Hook to fetch annotations with optional filters
  */
 export function useAnnotations(
-  filters: AnnotationsListFilters,
+  filters: AnnotationFilters,
   accessToken: string | null
 ) {
   const queryParams = new URLSearchParams();
@@ -104,7 +42,7 @@ export function useAnnotations(
 
   return useQuery({
     queryKey: ['annotations', filters, accessToken],
-    queryFn: () => apiClient.get<Annotation[]>(url, undefined, accessToken!),
+    queryFn: () => apiClient.get<StoredAnnotation[]>(url, undefined, accessToken!),
     enabled: !!accessToken,
     staleTime: 30 * 1000, // 30 seconds
   });
@@ -116,7 +54,7 @@ export function useAnnotations(
 export function useAnnotation(id: string | null, accessToken: string | null) {
   return useQuery({
     queryKey: ['annotation', id, accessToken],
-    queryFn: () => apiClient.get<Annotation>(`/annotations/${id}`, undefined, accessToken!),
+    queryFn: () => apiClient.get<StoredAnnotation>(`/annotations/${id}`, undefined, accessToken!),
     enabled: !!id && !!accessToken,
     staleTime: 60 * 1000, // 1 minute
   });
@@ -130,7 +68,7 @@ export function useCreateAnnotation(accessToken: string | null) {
 
   return useMutation({
     mutationFn: (input: CreateAnnotationInput) =>
-      apiClient.post<Annotation>('/annotations', input, accessToken!),
+      apiClient.post<StoredAnnotation>('/annotations', input, accessToken!),
     onMutate: async (input) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['annotations'] });
@@ -138,11 +76,12 @@ export function useCreateAnnotation(accessToken: string | null) {
       // Snapshot the previous value
       const queryCache = queryClient.getQueryCache();
       const annotationQueries = queryCache.findAll({ queryKey: ['annotations'] });
-      const previousAnnotations = annotationQueries[0]?.state.data as Annotation[] | undefined;
+      const previousAnnotations = annotationQueries[0]?.state.data as StoredAnnotation[] | undefined;
 
       // Create optimistic annotation with temporary ID
-      const optimisticAnnotation: Annotation = {
-        id: `temp-${Date.now()}`,
+      const tempId = `temp-${Date.now()}`;
+      const optimisticAnnotation: StoredAnnotation = {
+        id: tempId,
         orgId: '',
         studyId: input.studyId || null,
         motivation: input.motivation,
@@ -151,24 +90,32 @@ export function useCreateAnnotation(accessToken: string | null) {
         modifiedAt: new Date().toISOString(),
         participantId: input.participantId || null,
         sessionId: input.sessionId || null,
-        jsonld: {},
+        jsonld: {
+          '@context': 'http://www.w3.org/ns/anno.jsonld',
+          id: `urn:uuid:${tempId}`,
+          type: 'Annotation',
+          // Optimistic placeholder - will be replaced with server response
+          motivation: 'highlighting',
+          target: `temp:${tempId}`,
+        },
         bodyText: input.bodyText || null,
         deletedAt: null,
-        targets: input.targets.map((t, i) => ({
+        targets: input.targets.map((t, i): StoredAnnotationTarget => ({
           id: `temp-target-${i}`,
-          annotationId: `temp-${Date.now()}`,
+          annotationId: tempId,
           fileRefId: '',
           selectorType: t.selectorType,
           selectorValue: t.selectorValue,
           exactText: t.exactText || null,
-          startTime: t.startTime?.toString() || null,
-          endTime: t.endTime?.toString() || null,
+          startTime: t.startTime ?? null,
+          endTime: t.endTime ?? null,
           createdAt: new Date().toISOString(),
           fileRef: t.fileMetadata ? {
             id: '',
             name: t.fileMetadata.name,
             mimeType: t.fileMetadata.mimeType || null,
             webUrl: t.fileMetadata.webUrl || null,
+            provider: 'sharepoint',
           } : undefined,
         })),
         tagIds: input.tagIds || [],
@@ -176,7 +123,7 @@ export function useCreateAnnotation(accessToken: string | null) {
 
       // Optimistically add annotation to all matching queries
       annotationQueries.forEach((query) => {
-        queryClient.setQueryData<Annotation[]>(query.queryKey, (old) => {
+        queryClient.setQueryData<StoredAnnotation[]>(query.queryKey, (old) => {
           if (!old) return [optimisticAnnotation];
           return [optimisticAnnotation, ...old];
         });
@@ -190,7 +137,7 @@ export function useCreateAnnotation(accessToken: string | null) {
       const annotationQueries = queryCache.findAll({ queryKey: ['annotations'] });
 
       annotationQueries.forEach((query) => {
-        queryClient.setQueryData<Annotation[]>(query.queryKey, (old) => {
+        queryClient.setQueryData<StoredAnnotation[]>(query.queryKey, (old) => {
           if (!old) return old;
           return old.map((annotation) =>
             annotation.id === context?.optimisticId ? data : annotation
@@ -219,13 +166,29 @@ export function useUpdateAnnotation(accessToken: string | null) {
 
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: UpdateAnnotationInput }) =>
-      apiClient.put<Annotation>(`/annotations/${id}`, input, accessToken!),
+      apiClient.put<StoredAnnotation>(`/annotations/${id}`, input, accessToken!),
     onSuccess: (data) => {
       // Invalidate annotation queries
       queryClient.invalidateQueries({ queryKey: ['annotations'] });
       queryClient.invalidateQueries({ queryKey: ['annotation', data.id] });
     },
   });
+}
+
+/**
+ * Cluster item type for optimistic updates
+ */
+interface ClusterItem {
+  annotationId: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Cluster type for optimistic updates
+ */
+interface Cluster {
+  items?: ClusterItem[];
+  [key: string]: unknown;
 }
 
 /**
@@ -245,11 +208,11 @@ export function useDeleteAnnotation(accessToken: string | null) {
       // Snapshot the previous value
       const queryCache = queryClient.getQueryCache();
       const annotationQueries = queryCache.findAll({ queryKey: ['annotations'] });
-      const previousAnnotations = annotationQueries[0]?.state.data as Annotation[] | undefined;
+      const previousAnnotations = annotationQueries[0]?.state.data as StoredAnnotation[] | undefined;
 
       // Optimistically remove annotation from all matching queries
       annotationQueries.forEach((query) => {
-        queryClient.setQueryData<Annotation[]>(query.queryKey, (old) => {
+        queryClient.setQueryData<StoredAnnotation[]>(query.queryKey, (old) => {
           if (!old) return old;
           return old.filter((annotation) => annotation.id !== annotationId);
         });
@@ -260,13 +223,13 @@ export function useDeleteAnnotation(accessToken: string | null) {
       const previousClusters = clusterQueries[0]?.state.data;
 
       clusterQueries.forEach((query) => {
-        queryClient.setQueryData(query.queryKey, (old: any) => {
+        queryClient.setQueryData(query.queryKey, (old: Cluster[] | Cluster | undefined) => {
           if (!old) return old;
           // Handle both ClusterWithItems[] and single ClusterWithItems
           if (Array.isArray(old)) {
-            return old.map((cluster: any) => ({
+            return old.map((cluster) => ({
               ...cluster,
-              items: cluster.items?.filter((item: any) => item.annotationId !== annotationId) || [],
+              items: cluster.items?.filter((item) => item.annotationId !== annotationId) || [],
             }));
           }
           return old;

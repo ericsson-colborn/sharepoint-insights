@@ -1,14 +1,34 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
+/**
+ * Typewriter carousel component that cycles through phrases with typing effect.
+ * Types out each phrase character by character, pauses, then deletes and moves
+ * to the next phrase in a continuous loop. Includes a blinking cursor indicator.
+ *
+ * @example
+ * ```tsx
+ * <TypewriterCarousel
+ *   phrases={['Better insights.', 'Clearer patterns.', 'Faster synthesis.']}
+ *   typingSpeed={50}
+ *   pauseDuration={3000}
+ *   deletingSpeed={30}
+ * />
+ * ```
+ */
 interface TypewriterCarouselProps {
+  /** Array of phrases to cycle through */
   phrases: string[];
+  /** Additional CSS classes to apply */
   className?: string;
+  /** Milliseconds per character when typing (default: 100) */
   typingSpeed?: number;
+  /** Milliseconds to pause after typing complete phrase (default: 3000) */
   pauseDuration?: number;
+  /** Milliseconds per character when deleting (default: 50) */
   deletingSpeed?: number;
 }
 
-export function TypewriterCarousel({
+export const TypewriterCarousel = memo(function TypewriterCarousel({
   phrases,
   className = '',
   typingSpeed = 100,
@@ -73,4 +93,4 @@ export function TypewriterCarousel({
       <span className="cursor-blink">|</span>
     </span>
   );
-}
+});

@@ -39,5 +39,10 @@ pnpm-debug.log*
 .temp/
 coverage/
 
+<<<<<<< HEAD
+# Claude
 #.claude
-.claude/settings/*
+=======
+# Claude (agents are tracked, settings are not)
+.claude/settings*
+>>>>>>> d240bdf5fa7b341c33099e60184ffd851fc079eb

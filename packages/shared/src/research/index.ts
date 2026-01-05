@@ -1,9 +1,16 @@
 /**
+ * @cluster/research
+ *
  * Research-specific extension types
  * Custom vocabulary at https://research-annotations.io/ns/research.jsonld
  */
 
-import type { Annotation } from './annotation.js';
+import type { Annotation } from '@cluster/w3c';
+import type { StorageProvider } from '../db';
+
+// ============================================================================
+// Study Types
+// ============================================================================
 
 export type StudyStatus = 'active' | 'paused' | 'completed' | 'archived';
 
@@ -20,9 +27,27 @@ export interface Study {
   updatedAt: string;
 }
 
+// ============================================================================
+// Research Annotations
+// ============================================================================
+
 export type ConfidenceLevel = 'low' | 'medium' | 'high';
 export type ImpactLevel = 'low' | 'medium' | 'high' | 'critical';
 
+/**
+ * Research-specific motivation extensions
+ */
+export type ResearchMotivation =
+  | 'research:insight'
+  | 'research:evidence'
+  | 'research:theme'
+  | 'research:quote'
+  | 'research:action'
+  | 'research:synthesis';
+
+/**
+ * Insight annotation with research metadata
+ */
 export interface Insight extends Annotation {
   type: ['Annotation', 'research:Insight'];
   'research:confidence'?: ConfidenceLevel;
@@ -30,11 +55,18 @@ export interface Insight extends Annotation {
   'research:recommendation'?: string;
 }
 
+/**
+ * Annotation with research context
+ */
 export interface ResearchAnnotation extends Annotation {
   'research:study'?: string;
   'research:participant'?: string;
   'research:session'?: string;
 }
+
+// ============================================================================
+// Affinity Mapping
+// ============================================================================
 
 export interface AffinityGroup {
   id: string;
@@ -50,6 +82,10 @@ export interface AffinityGroup {
   createdAt: string;
   updatedAt: string;
 }
+
+// ============================================================================
+// Taxonomy & Tags
+// ============================================================================
 
 export interface Taxonomy {
   id: string;
@@ -75,10 +111,15 @@ export interface Tag {
   createdAt: string;
 }
 
+// ============================================================================
+// File References
+// ============================================================================
+
 export interface FileRef {
   id: string;
   orgId: string;
   studyId?: string;
+  provider: StorageProvider;
   sharepointDriveId: string;
   sharepointItemId: string;
   sharepointSiteId?: string;
@@ -92,3 +133,6 @@ export interface FileRef {
   createdAt: string;
   updatedAt: string;
 }
+
+// Re-export for convenience
+export type { StorageProvider } from '../db';

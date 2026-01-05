@@ -1,14 +1,36 @@
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { memo, ReactNode, useEffect, useRef, useState } from 'react';
 
+/**
+ * Video background section with parallax scrolling effect.
+ * Wraps children with a looping background video and gradient overlay.
+ * Optionally applies parallax scroll effect to create depth. Used to create
+ * immersive background sections on the landing page.
+ *
+ * @example
+ * ```tsx
+ * <VideoBackground
+ *   videoSrc={backgroundVideo}
+ *   overlayOpacity={0.9}
+ *   enableParallax={true}
+ * >
+ *   <YourContent />
+ * </VideoBackground>
+ * ```
+ */
 interface VideoBackgroundProps {
+  /** URL or import path to the video file (MP4) */
   videoSrc: string;
+  /** Content to render on top of the video background */
   children: ReactNode;
-  overlayOpacity?: number; // 0-1, default 0.85
+  /** Opacity of the dark gradient overlay (0-1, default: 0.85) */
+  overlayOpacity?: number;
+  /** Enable parallax scrolling effect on video (default: true) */
   enableParallax?: boolean;
+  /** Additional CSS classes to apply to the section */
   className?: string;
 }
 
-export function VideoBackground({
+export const VideoBackground = memo(function VideoBackground({
   videoSrc,
   children,
   overlayOpacity = 0.85,
@@ -71,4 +93,4 @@ export function VideoBackground({
       <div className="relative z-10">{children}</div>
     </section>
   );
-}
+});

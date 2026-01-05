@@ -26,20 +26,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
+import type { SharePointDriveItem, FileBrowserState } from '../types/sharepoint';
+import { isMediaFile } from '../types/sharepoint';
+import type { SelectionInfo } from '../hooks/useTextSelection';
+import type { MediaSelectionInfo } from '../hooks/useMediaSelection';
+import type { SelectorType, CombinedTextSelector, Selector } from '@cluster/core';
+import { isCombinedTextSelector } from '@cluster/core';
 
 export function FilesPage() {
   const location = useLocation();
-  const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [selectedFile, setSelectedFile] = useState<SharePointDriveItem | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [seekToTime, setSeekToTime] = useState<number>();
   const [showAnnotationPopover, setShowAnnotationPopover] = useState(false);
   const [popoverMode, setPopoverMode] = useState<'create' | 'edit'>('create');
   const [editingAnnotation, setEditingAnnotation] = useState<Annotation | null>(null);
-  const [drawerSelection, setDrawerSelection] = useState<any>(null);
+  const [drawerSelection, setDrawerSelection] = useState<SelectionInfo | MediaSelectionInfo | null>(null);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
   const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
-  const [fileBrowserState, setFileBrowserState] = useState<any>(null);
+  const [fileBrowserState, setFileBrowserState] = useState<FileBrowserState | null>(null);
   const { accessToken } = useAccessToken();
   const transcriptContainerRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +70,7 @@ export function FilesPage() {
       console.error('Failed to restore FilesPage state:', error);
     }
 
+    // Why do we need this??
     // Check if navigating from homepage with a selected file
     const locationState = location.state as { selectedFileId?: string } | null;
     if (locationState?.selectedFileId) {
@@ -94,14 +101,14 @@ export function FilesPage() {
   }, [selectedFile, leftSidebarOpen, rightSidebarOpen, fileBrowserState]);
 
   // Stable callback for FileBrowser state changes
-  const handleFileBrowserStateChange = useCallback((state: any) => {
+  const handleFileBrowserStateChange = useCallback((state: FileBrowserState) => {
     setFileBrowserState(state);
   }, []);
 
   // Get files from current folder to detect transcript
   const { data: folderItems } = useDriveItems(
-    selectedFile?.parentReference?.driveId,
-    selectedFile?.parentReference?.id,
+    selectedFile?.parentReference?.driveId ?? null,
+    selectedFile?.parentReference?.id ?? 'root',
     accessToken
   );
 
@@ -134,15 +141,6 @@ export function FilesPage() {
   const deleteAnnotation = useDeleteAnnotation(accessToken);
   const updateAnnotation = useUpdateAnnotation(accessToken);
 
-  const isMediaFile = (file: any) => {
-    const mimeType = file?.file?.mimeType || '';
-    return (
-      mimeType.startsWith('video/') ||
-      mimeType.startsWith('audio/') ||
-      mimeType.startsWith('image/')
-    );
-  };
-
   const handleSeek = (time: number) => {
     setSeekToTime(time);
     // Reset seek after a short delay to allow re-seeking to same time
@@ -153,8 +151,8 @@ export function FilesPage() {
   const handleCreateHighlight = async (data: {
     bodyText?: string;
     tagIds?: string[];
-    selectorType: string;
-    selectorValue: any;
+    selectorType: SelectorType;
+    selectorValue: Selector | CombinedTextSelector;
     exactText?: string;
     startTime?: number;
     endTime?: number;
@@ -192,7 +190,7 @@ export function FilesPage() {
             mimeType: selectedFile.file?.mimeType,
             size: selectedFile.size,
             webUrl: selectedFile.webUrl,
-            siteId: fileBrowserState.selectedSiteId,
+            siteId: fileBrowserState.selectedSiteId ?? undefined,
           },
         },
       ],
@@ -221,7 +219,7 @@ export function FilesPage() {
   };
 
   // Handle clicking on an annotation from the sidebar
-  const handleAnnotationClick = (annotation: any) => {
+  const handleAnnotationClick = (annotation: Annotation) => {
     // If clicking the already-selected highlight, un-focus it
     if (selectedHighlightId === annotation.id) {
       setSelectedHighlightId(null);
@@ -234,15 +232,15 @@ export function FilesPage() {
     setSelectedHighlightId(annotation.id);
 
     // For video/audio highlights, seek to the start time
-    if (target?.selectorType === 'FragmentSelector' && target.startTime) {
-      handleSeek(parseFloat(target.startTime));
+    if (target?.selectorType === 'FragmentSelector' && target.startTime != null) {
+      handleSeek(target.startTime);
     }
 
     // For text highlights, seek to the time range (if available)
     if (target?.selectorType === 'TextQuoteSelector') {
       // Seek to the time range if available (this will auto-scroll the transcript)
-      if (target.startTime) {
-        handleSeek(parseFloat(target.startTime));
+      if (target.startTime != null) {
+        handleSeek(target.startTime);
       }
     }
   };
@@ -310,10 +308,10 @@ export function FilesPage() {
       const target = annotation.targets[0];
 
       // Seek to the timestamp without clearing the selection
-      if (target?.selectorType === 'FragmentSelector' && target.startTime) {
-        handleSeek(parseFloat(target.startTime));
-      } else if (target?.selectorType === 'TextQuoteSelector' && target.startTime) {
-        handleSeek(parseFloat(target.startTime));
+      if (target?.selectorType === 'FragmentSelector' && target.startTime != null) {
+        handleSeek(target.startTime);
+      } else if (target?.selectorType === 'TextQuoteSelector' && target.startTime != null) {
+        handleSeek(target.startTime);
       }
     }
   };
@@ -337,12 +335,19 @@ export function FilesPage() {
     mediaSelection.clearSelection();
   };
 
+  // Type guard to check if selection is a text selection
+  const isTextSelectionType = (
+    sel: SelectionInfo | MediaSelectionInfo | null
+  ): sel is SelectionInfo => {
+    return sel !== null && 'textQuoteSelector' in sel;
+  };
+
   // Build highlight ranges for overlay
   const highlightRanges = useMemo(() => {
     const ranges: Array<{ id: string; startOffset: number; endOffset: number; isDraft?: boolean }> = [];
 
     // Add draft highlight if drawer is open
-    if (showAnnotationPopover && drawerSelection && 'textPositionSelector' in drawerSelection) {
+    if (showAnnotationPopover && drawerSelection && isTextSelectionType(drawerSelection)) {
       const draft = {
         id: 'draft',
         startOffset: drawerSelection.textPositionSelector.start,
@@ -356,21 +361,24 @@ export function FilesPage() {
     if (selectedFile && transcript) {
       const fileAnnotations = annotations.filter((ann) => {
         const target = ann.targets[0];
-        // Match using SharePoint item ID instead of internal file ref ID
-        return target?.sharepointItemId === selectedFile.id && target?.selectorType === 'TextQuoteSelector';
+        // Match using SharePoint item ID from the file reference
+        return target?.fileRef?.sharepointItemId === selectedFile.id && target?.selectorType === 'TextQuoteSelector';
       });
 
       fileAnnotations.forEach((ann) => {
         const target = ann.targets[0];
-        const textPosition = target?.selectorValue?.textPosition;
-        if (textPosition?.start !== undefined && textPosition?.end !== undefined) {
-          const saved = {
-            id: ann.id,
-            startOffset: textPosition.start,
-            endOffset: textPosition.end,
-            isDraft: false,
-          };
-          ranges.push(saved);
+        const selectorValue = target?.selectorValue
+        if (isCombinedTextSelector(selectorValue)) {
+          const { textPosition } = selectorValue;
+          if (textPosition.start !== undefined && textPosition.end !== undefined) {
+            const saved = {
+              id: ann.id,
+              startOffset: textPosition.start,
+              endOffset: textPosition.end,
+              isDraft: false,
+            };
+            ranges.push(saved);
+          }
         }
       });
     }
@@ -381,33 +389,34 @@ export function FilesPage() {
   return (
     <div className="h-[calc(100vh-4rem)] flex overflow-hidden bg-background relative">
       {/* Left Sidebar - File Browser */}
-      <div
+      <aside
+        aria-label="File browser"
         className={`bg-gray-900 border-r border-gray-700 transition-all duration-300 ease-in-out ${
           leftSidebarOpen ? 'w-80' : 'w-0'
         } overflow-hidden h-full`}
       >
         <div className="h-full w-80 flex flex-col">
           <div className="p-3 border-b border-gray-700 flex items-center justify-between flex-shrink-0">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Files</h2>
+            <h2 id="file-browser-heading" className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Files</h2>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setLeftSidebarOpen(false)}
               className="h-8 w-8 text-gray-400 hover:text-gray-200 hover:bg-gray-800 relative z-50"
-              title="Close file browser"
+              aria-label="Close file browser"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
           <ScrollArea className="flex-1">
             <FileBrowser
               onFileSelect={setSelectedFile}
-              initialState={fileBrowserState}
+              initialState={fileBrowserState ?? undefined}
               onStateChange={handleFileBrowserStateChange}
             />
           </ScrollArea>
         </div>
-      </div>
+      </aside>
 
       {/* Left Sidebar Toggle (when collapsed) */}
       {!leftSidebarOpen && (
@@ -416,14 +425,14 @@ export function FilesPage() {
           size="icon"
           onClick={() => setLeftSidebarOpen(true)}
           className="absolute top-3 left-3 z-10"
-          title="Open file browser"
+          aria-label="Open file browser"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-5 w-5" aria-hidden="true" />
         </Button>
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden h-full">
+      <main className="flex-1 flex flex-col overflow-hidden h-full" aria-label="Media viewer">
         {selectedFile && isMediaFile(selectedFile) && accessToken ? (
           <ScrollArea className="h-full">
             <div className="max-w-6xl mx-auto p-6 space-y-6">
@@ -498,10 +507,11 @@ export function FilesPage() {
               </div>
             </div>
           )}
-      </div>
+      </main>
 
       {/* Right Sidebar - Annotations */}
-      <div
+      <aside
+        aria-label="Highlights panel"
         className={`bg-card border-l transition-all duration-300 ease-in-out ${
           rightSidebarOpen ? 'w-80' : 'w-0'
         } overflow-hidden h-full`}
@@ -509,18 +519,18 @@ export function FilesPage() {
         <div className="h-full w-80 flex flex-col">
           <div className="p-4 border-b flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold uppercase tracking-wide">
+              <h2 id="highlights-heading" className="text-sm font-semibold uppercase tracking-wide">
                 Highlights
               </h2>
-              <Badge variant="secondary">{annotations.length}</Badge>
+              <Badge variant="secondary" aria-label={`${annotations.length} highlights`}>{annotations.length}</Badge>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setRightSidebarOpen(false)}
-              title="Close highlights"
+              aria-label="Close highlights panel"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
           <ScrollArea className="flex-1 p-4">
@@ -540,7 +550,7 @@ export function FilesPage() {
             )}
           </ScrollArea>
         </div>
-      </div>
+      </aside>
 
       {/* Right Sidebar Toggle (when collapsed) */}
       {!rightSidebarOpen && (
@@ -549,9 +559,9 @@ export function FilesPage() {
           size="icon"
           onClick={() => setRightSidebarOpen(true)}
           className="absolute top-3 right-3 z-10 rounded-l-md rounded-r-none"
-          title="Show highlights"
+          aria-label="Show highlights panel"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </Button>
       )}
 

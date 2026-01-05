@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { Annotation } from '../../api/hooks/useAnnotations';
+import { formatTimestamp } from '../../lib/formatting';
 
 interface AnnotationListProps {
   annotations: Annotation[];
@@ -52,12 +53,12 @@ export function AnnotationList({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" role="list" aria-label="Highlights list">
       {annotations.map((annotation) => {
         const target = annotation.targets[0];
         const isMediaAnnotation = target?.selectorType === 'FragmentSelector';
-        const startTime = target?.startTime ? parseFloat(target.startTime) : null;
-        const endTime = target?.endTime ? parseFloat(target.endTime) : null;
+        const startTime = target?.startTime ?? null;
+        const endTime = target?.endTime ?? null;
 
         // Check if this media annotation is currently active
         const isActive =
@@ -69,12 +70,25 @@ export function AnnotationList({
           currentTime <= endTime;
 
         const isSelected = selectedHighlightId === annotation.id;
+        const highlightLabel = target?.exactText
+          ? `Highlight: ${target.exactText.substring(0, 50)}${target.exactText.length > 50 ? '...' : ''}`
+          : `Highlight from ${new Date(annotation.createdAt).toLocaleDateString()}`;
 
         return (
-          <div
+          <article
             key={annotation.id}
             ref={isSelected ? selectedRef : null}
             onClick={() => onAnnotationClick?.(annotation)}
+            role="listitem"
+            aria-label={highlightLabel}
+            aria-selected={isSelected}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onAnnotationClick?.(annotation);
+              }
+            }}
             className={`p-3 rounded-lg border cursor-pointer transition-all ${
               isSelected
                 ? 'bg-yellow-50 border-yellow-300 shadow-md ring-2 ring-yellow-200'
@@ -93,8 +107,9 @@ export function AnnotationList({
                       onAnnotationClick?.(annotation);
                     }}
                     className="text-xs font-mono text-primary hover:text-primary/80 hover:underline"
+                    aria-label={`Seek to ${formatTimestamp(startTime)}`}
                   >
-                    {formatTime(startTime)}
+                    {formatTimestamp(startTime)}
                   </button>
                 )}
                 <span className="text-xs text-muted-foreground">
@@ -110,9 +125,9 @@ export function AnnotationList({
                       onAnnotationEdit(annotation);
                     }}
                     className="text-muted-foreground hover:text-primary"
-                    title="Edit highlight"
+                    aria-label="Edit highlight"
                   >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -129,9 +144,9 @@ export function AnnotationList({
                       onAnnotationDelete(annotation.id);
                     }}
                     className="text-gray-400 hover:text-red-600"
-                    title="Delete highlight"
+                    aria-label="Delete highlight"
                   >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -172,15 +187,9 @@ export function AnnotationList({
                 </>
               )}
             </div>
-          </div>
+          </article>
         );
       })}
     </div>
   );
-}
-
-function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
 }

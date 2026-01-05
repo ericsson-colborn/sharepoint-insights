@@ -34,9 +34,9 @@ export function ClusterPlaybackPage() {
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((item) => {
       const target = item.annotation.targets[0];
-      const startTime = target?.startTime ? parseFloat(target.startTime) : 0;
+      const startTime = target?.startTime ?? 0;
       // If no endTime, use a very large number so it plays to the end
-      const endTime = target?.endTime ? parseFloat(target.endTime) : Infinity;
+      const endTime = target?.endTime ?? Infinity;
 
       return {
         annotation: item.annotation,
