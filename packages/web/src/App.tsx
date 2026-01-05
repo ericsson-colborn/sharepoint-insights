@@ -16,6 +16,7 @@ import { Toaster, toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { RecentActivityCard } from './components/dashboard/RecentActivityCard';
+import { WhiteboardBackground } from './components/ui/whiteboard-background';
 
 // Add cursor blink animation styles
 const cursorBlinkStyles = `
@@ -166,8 +167,8 @@ function HomePage({ currentUser }: any) {
   const hasRecentActivity = recentActivity && recentActivity.length > 0;
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-gradient-to-b from-gray-50 via-white to-primary/30 flex items-center">
-      <div className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
+    <WhiteboardBackground className="min-h-[calc(100vh-4rem)] flex items-center">
+      <main className="w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
         {/* Welcome Header */}
         <div className="mb-20">
           <div className="flex items-center justify-center gap-4 mb-8">
@@ -204,8 +205,8 @@ function HomePage({ currentUser }: any) {
         ) : (
           <EmptyStateActions />
         )}
-      </div>
-    </main>
+      </main>
+    </WhiteboardBackground>
   );
 }
 
