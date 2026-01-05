@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import type { Readable } from 'node:stream';
 import { requireAuth, type AuthenticatedRequest } from '../middleware/auth.js';
 import { SharePointService } from '../services/sharepoint/client.js';
 import { parseVTT } from '../services/transcripts/parser.js';
@@ -9,12 +10,12 @@ export const filesRouter = Router();
 filesRouter.use(requireAuth);
 
 /**
- * List SharePoint sites
+ * List SharePoint sites (containers)
  */
 filesRouter.get('/sites', async (req: AuthenticatedRequest, res) => {
   try {
     const sp = new SharePointService(req.graphClient!);
-    const sites = await sp.listSites();
+    const sites = await sp.listContainers();
     res.json(sites);
   } catch (error) {
     console.error('Error fetching sites:', error);
@@ -23,12 +24,12 @@ filesRouter.get('/sites', async (req: AuthenticatedRequest, res) => {
 });
 
 /**
- * Get a specific site
+ * Get a specific site (container)
  */
 filesRouter.get('/sites/:siteId', async (req: AuthenticatedRequest, res) => {
   try {
     const sp = new SharePointService(req.graphClient!);
-    const site = await sp.getSite(req.params.siteId);
+    const site = await sp.getContainer(req.params.siteId!);
     res.json(site);
   } catch (error) {
     console.error('Error fetching site:', error);
@@ -42,7 +43,7 @@ filesRouter.get('/sites/:siteId', async (req: AuthenticatedRequest, res) => {
 filesRouter.get('/sites/:siteId/drives', async (req: AuthenticatedRequest, res) => {
   try {
     const sp = new SharePointService(req.graphClient!);
-    const drives = await sp.listDrives(req.params.siteId);
+    const drives = await sp.listDrives(req.params.siteId!);
     res.json(drives);
   } catch (error) {
     console.error('Error fetching drives:', error);
@@ -57,7 +58,7 @@ filesRouter.get('/drives/:driveId/items', async (req: AuthenticatedRequest, res)
   try {
     const sp = new SharePointService(req.graphClient!);
     const itemId = (req.query.itemId as string) || 'root';
-    const items = await sp.listDriveItems(req.params.driveId, itemId);
+    const items = await sp.listItems(req.params.driveId!, itemId);
     res.json(items);
   } catch (error) {
     console.error('Error fetching drive items:', error);
@@ -71,7 +72,7 @@ filesRouter.get('/drives/:driveId/items', async (req: AuthenticatedRequest, res)
 filesRouter.get('/drives/:driveId/items/:itemId', async (req: AuthenticatedRequest, res) => {
   try {
     const sp = new SharePointService(req.graphClient!);
-    const item = await sp.getItem(req.params.driveId, req.params.itemId);
+    const item = await sp.getItem(req.params.driveId!, req.params.itemId!);
     res.json(item);
   } catch (error) {
     console.error('Error fetching item:', error);
@@ -85,7 +86,10 @@ filesRouter.get('/drives/:driveId/items/:itemId', async (req: AuthenticatedReque
 filesRouter.get('/drives/:driveId/items/:itemId/content', async (req: AuthenticatedRequest, res) => {
   try {
     const sp = new SharePointService(req.graphClient!);
-    const stream = await sp.getFileContent(req.params.driveId, req.params.itemId);
+    const stream = (await sp.getFileContent(
+      req.params.driveId!,
+      req.params.itemId!
+    )) as Readable;
 
     // Pipe the stream to response
     stream.pipe(res);
@@ -101,7 +105,7 @@ filesRouter.get('/drives/:driveId/items/:itemId/content', async (req: Authentica
 filesRouter.get('/drives/:driveId/items/:itemId/download-url', async (req: AuthenticatedRequest, res) => {
   try {
     const sp = new SharePointService(req.graphClient!);
-    const url = await sp.getDownloadUrl(req.params.driveId, req.params.itemId);
+    const url = await sp.getDownloadUrl(req.params.driveId!, req.params.itemId!);
     res.json({ url });
   } catch (error) {
     console.error('Error getting download URL:', error);
@@ -117,7 +121,10 @@ filesRouter.get('/drives/:driveId/items/:itemId/transcript', async (req: Authent
     const sp = new SharePointService(req.graphClient!);
 
     // Get file content
-    const stream = await sp.getFileContent(req.params.driveId, req.params.itemId);
+    const stream = (await sp.getFileContent(
+      req.params.driveId!,
+      req.params.itemId!
+    )) as Readable;
 
     // Collect stream data
     const chunks: Buffer[] = [];
